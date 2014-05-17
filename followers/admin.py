@@ -3,9 +3,12 @@ from django import forms
 
 from followers.models import ManMan
 
+thread_unsafe_follows_choices = ()
+thread_unsafe_followed_by_choices = ()
+
 class ManForm(forms.ModelForm):
-    follows_choices = () # will be dynamically set from ManAdmin.get_form
-    followed_by_choices = () # will be dynamically set from ManAdmin.get_form
+    follows_choices = ((1,1),) # will be dynamically set from ManAdmin.get_form
+    followed_by_choices = ((2,2),) # will be dynamically set from ManAdmin.get_form
     follows = forms.MultipleChoiceField(label='follows', choices=follows_choices)
     followed_by = forms.MultipleChoiceField(label='followed by', choices=followed_by_choices)
 
@@ -13,12 +16,19 @@ class ManForm(forms.ModelForm):
         model = ManMan
         fields = ['name', 'follows', 'followed_by']
 
+    def __init__(self, *args, **kwargs):
+        super(ManForm, self).__init__(*args, **kwargs)
+        self.fields['follows'] = forms.MultipleChoiceField(label='follows', choices=thread_unsafe_follows_choices)
+        self.fields['followed_by'] = forms.MultipleChoiceField(label='followed by', choices=thread_unsafe_followed_by_choices)
+        logfile = open("/home/burkov/Documents/Work/2014/May_16_sqlite/logfile", 'a')
+        logfile.write("ManForm init called\n")
+
 class ManAdmin(admin.ModelAdmin):
     list_display = ('name', 'len_follows', 'len_followed_by')
     list_display_links = ('name',)
     form = ManForm
 
-    def save_form(self, request, obj=None, **kwargs):
+    def get_form(self, request, obj=None, **kwargs):
         '''
         This is an ugly hack, created for the following purpose:
 
@@ -33,6 +43,8 @@ class ManAdmin(admin.ModelAdmin):
         TODO: Thread-safety!
         TODO: Exception handling!
         '''
+        logfile = open("/home/burkov/Documents/Work/2014/May_16_sqlite/logfile", 'a')
+        logfile.write("get_form called, obj = %s, kwargs = %s\n" % (obj, kwargs))
         # get last component of path, it is Man id
         components = request.path.split("/")
         if len(components) > 1 and components[-1] == "":
@@ -46,15 +58,18 @@ class ManAdmin(admin.ModelAdmin):
         follows_choices = []
         for follower in followers:
             follows_choices.append((follower, follower))
-        ManForm.follows_choices = tuple(follows_choices)
+        global thread_unsafe_follows_choices
+        thread_unsafe_follows_choices = tuple(follows_choices)
 
         followed_by = self.followed_by(man)
         followed_by_choices = []
         for followed in followed_by:
             followed_by_choices.append((followed, followed))
-        ManForm.followed_by_choices = tuple(followed_by_choices)
+        global thread_unsafe_followed_by_choices
+        thread_unsafe_followed_by_choices = tuple(followed_by_choices)
 
-        return super(ManAdmin, self).save_form(request, obj, **kwargs)
+        output_form = super(ManAdmin, self).get_form(request, obj, **kwargs)
+        return output_form
 
     def follows(self, obj):
         '''returns list of Men, whom obj follows'''
