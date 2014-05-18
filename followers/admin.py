@@ -20,8 +20,6 @@ class ManForm(forms.ModelForm):
         super(ManForm, self).__init__(*args, **kwargs)
         self.fields['follows'] = forms.MultipleChoiceField(label='follows', choices=thread_unsafe_follows_choices)
         self.fields['followed_by'] = forms.MultipleChoiceField(label='followed by', choices=thread_unsafe_followed_by_choices)
-        logfile = open("/home/burkov/Documents/Work/2014/May_16_sqlite/logfile", 'a')
-        logfile.write("ManForm init called\n")
 
 class ManAdmin(admin.ModelAdmin):
     list_display = ('name', 'len_follows', 'len_followed_by')
@@ -43,8 +41,6 @@ class ManAdmin(admin.ModelAdmin):
         TODO: Thread-safety!
         TODO: Exception handling!
         '''
-        logfile = open("/home/burkov/Documents/Work/2014/May_16_sqlite/logfile", 'a')
-        logfile.write("get_form called, obj = %s, kwargs = %s\n" % (obj, kwargs))
         # get last component of path, it is Man id
         components = request.path.split("/")
         if len(components) > 1 and components[-1] == "":
