@@ -10,3 +10,6 @@ class Man(models.Model):
         managed = True
         db_table = 'man_man'
 
+class Follows(models.Model):
+    who = models.ForeignKey('Man', related_name='who')
+    whom = models.ForeignKey('Man', related_name='whom')
