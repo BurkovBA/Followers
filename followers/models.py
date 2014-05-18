@@ -13,6 +13,6 @@ class Man(models.Model):
     def __str__(self):
         return "%s, id=%s" % (self.name, self.id)
 
-class Follows(models.Model):
+class Follow(models.Model):
     who = models.ForeignKey('Man', related_name='who')
     whom = models.ForeignKey('Man', related_name='whom')

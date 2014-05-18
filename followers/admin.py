@@ -1,15 +1,19 @@
 from django.contrib import admin
 from django import forms
 
-from followers.models import Man, Follows
+from followers.models import Man, Follow
 
 class FollowsInline(admin.TabularInline):
-    model = Follows
+    model = Follow
     fk_name = "who"
+    verbose_name = "followed by this Man"
+    verbose_name_plural = "Follows"
 
 class FollowedInline(admin.TabularInline):
-    model = Follows
+    model = Follow
     fk_name = "whom"
+    verbose_name = "following this Man"
+    verbose_name_plural = "Followed by"
 
 class ManAdmin(admin.ModelAdmin):
     list_display = ('name', 'len_follows', 'len_followed_by')
