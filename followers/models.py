@@ -10,6 +10,9 @@ class Man(models.Model):
         managed = True
         db_table = 'man_man'
 
+    def __str__(self):
+        return "%s, id=%s" % (self.name, self.id)
+
 class Follows(models.Model):
     who = models.ForeignKey('Man', related_name='who')
     whom = models.ForeignKey('Man', related_name='whom')
