@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from followers.models import ManMan
+from followers.models import Man
 
 thread_unsafe_follows_choices = ()
 thread_unsafe_followed_by_choices = ()
@@ -13,7 +13,7 @@ class ManForm(forms.ModelForm):
     followed_by = forms.MultipleChoiceField(label='followed by', choices=followed_by_choices)
 
     class Meta:
-        model = ManMan
+        model = Man
         fields = ['name', 'follows', 'followed_by']
 
     def __init__(self, *args, **kwargs):
@@ -51,7 +51,7 @@ class ManAdmin(admin.ModelAdmin):
             id = int(components[-2])
         elif len(components) > 0: 
             id = int(components[-1])
-        man = ManMan.objects.get(id=id)
+        man = Man.objects.get(id=id)
 
         # prepare 2-tuples in ManForm
         followers = self.follows(man)
@@ -81,7 +81,7 @@ class ManAdmin(admin.ModelAdmin):
     def followed_by(self, obj):
         '''returns list of Men, who follow obj'''
         output = []
-        for follower in ManMan.objects.all():
+        for follower in Man.objects.all():
             all_followed = str(follower.follow_ids).split(" ")
             for followed in all_followed:
                 if followed and int(followed) == int(obj.id): 
@@ -92,4 +92,4 @@ class ManAdmin(admin.ModelAdmin):
     def len_followed_by(self, obj):
         return str(len(self.followed_by(obj)))
 
-admin.site.register(ManMan, ManAdmin)
+admin.site.register(Man, ManAdmin)
