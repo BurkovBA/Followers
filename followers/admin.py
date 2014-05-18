@@ -22,21 +22,14 @@ class ManAdmin(admin.ModelAdmin):
 
     def follows(self, obj):
         '''returns list of Men, whom obj follows'''
-        return obj.follow_ids.split(" ")
+        return Follow.objects.filter(who=obj)
 
     def len_follows(self, obj):
         return str(len(self.follows(obj)))
 
     def followed_by(self, obj):
         '''returns list of Men, who follow obj'''
-        output = []
-        for follower in Man.objects.all():
-            all_followed = str(follower.follow_ids).split(" ")
-            for followed in all_followed:
-                if followed and int(followed) == int(obj.id): 
-                    output.append(unicode(follower.id))
-                    break
-        return output
+        return Follow.objects.filter(whom=obj)
 
     def len_followed_by(self, obj):
         return str(len(self.followed_by(obj)))

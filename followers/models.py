@@ -4,7 +4,6 @@ from django.db import models
 class Man(models.Model):
 #    id = models.IntegerField(primary_key=True)  # AutoField?
     name = models.CharField(max_length=32)
-    follow_ids = models.TextField()
 
     class Meta:
         managed = True
