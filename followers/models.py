@@ -7,11 +7,12 @@ class Man(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'man_man'
+#        db_table = 'man_man'
 
     def __str__(self):
         return "%s, id=%s" % (self.name, self.id)
 
 class Follow(models.Model):
+    '''Describes follow relation between Man instances: who follows whom'''
     who = models.ForeignKey('Man', related_name='who')
     whom = models.ForeignKey('Man', related_name='whom')
